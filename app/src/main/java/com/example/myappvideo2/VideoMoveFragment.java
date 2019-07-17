@@ -25,38 +25,38 @@ import java.net.URL;
 
 public class VideoMoveFragment extends Fragment {
 
-    VideoView myVideo;
-    Button upBtn;
-    Button leftBtn;
-    Button rightBtn;
-    Button downBtn;
-    MediaController mc;
-    CheckBox checkMoveAccelerometer;
-    String ip="";
-    String log="";
-    String pas="";
-    Boolean PTZ;
+    private VideoView myVideo;
+    private Button upBtn;
+    private Button leftBtn;
+    private Button rightBtn;
+    private Button downBtn;
+    private MediaController mc;
+    private CheckBox checkMoveAccelerometer;
+    private String ip;
+    private String log;
+    private String pas;
+    private Boolean PTZ;
 
-    Accelerometer accelerometer;
+    private Accelerometer accelerometer;
 
-    SeekBar seekZoom;
-    Button zoomLeftBtn;
-    Button zoomRightBtn;
+    private SeekBar seekZoom;
+    private Button zoomLeftBtn;
+    private Button zoomRightBtn;
 
-    SeekBar seekFocus;
-    Button focusLeftBtn;
-    Button focusRightBtn;
+    private SeekBar seekFocus;
+    private Button focusLeftBtn;
+    private Button focusRightBtn;
 
-    SeekBar seekIris;
-    Button irisLeftBtn;
-    Button irisRightBtn;
+    private SeekBar seekIris;
+    private Button irisLeftBtn;
+    private Button irisRightBtn;
 
-    SeekBar.OnSeekBarChangeListener sbListenerZFI;
+    private SeekBar.OnSeekBarChangeListener sbListenerZFI;
 
-    SeekBar seekPan;
-    SeekBar seekTilt;
-    int vertNow=50;
-    int horNow=50;
+    private SeekBar seekPan;
+    private SeekBar seekTilt;
+    private int vertNow=50;
+    private int horNow=50;
 
     public VideoMoveFragment(String i, String u, String p, Boolean ptz) {
         ip=i;
@@ -98,7 +98,7 @@ public class VideoMoveFragment extends Fragment {
         seekPan=(SeekBar)v.findViewById(R.id.seekHorMove);
         seekTilt=(SeekBar)v.findViewById(R.id.seekVertMove);
 
-        String URL=null;
+        String URL;
         if(log.equalsIgnoreCase("")&&pas.equalsIgnoreCase(""))
             URL=ip;
         else
@@ -203,18 +203,18 @@ public class VideoMoveFragment extends Fragment {
                         @Override
                         public void onTranslation(float tx, float ty, float tz) {
                             if (tx > 1.0f) {
-                                new SendTask().execute("http://"+ip+"/axis-cgi/com/ptz.cgi?move=left");
+                                //new SendTask().execute("http://"+ip+"/axis-cgi/com/ptz.cgi?move=left");
                                 leftChange(seekPan,1);
                             } else if (tx < -1.0f) {
-                                new SendTask().execute("http://"+ip+"/axis-cgi/com/ptz.cgi?move=right");
+                                //new SendTask().execute("http://"+ip+"/axis-cgi/com/ptz.cgi?move=right");
                                 rightChange(seekPan,1);
                             }
 
                             if (ty > 1.0f) {
-                                new SendTask().execute("http://"+ip+"/axis-cgi/com/ptz.cgi?move=down");
+                                //new SendTask().execute("http://"+ip+"/axis-cgi/com/ptz.cgi?move=down");
                                 leftChange(seekTilt,1);
                             } else if (ty < -1.0f) {
-                                new SendTask().execute("http://"+ip+"/axis-cgi/com/ptz.cgi?move=up");
+                                //new SendTask().execute("http://"+ip+"/axis-cgi/com/ptz.cgi?move=up");
                                 rightChange(seekTilt,1);
                             }
                         }
@@ -329,7 +329,7 @@ public class VideoMoveFragment extends Fragment {
         @Override
         protected String doInBackground(String... uri) {
             String urlString=uri[0];
-            String responseString="OK";
+            String responseString;
             HttpURLConnection conn=null;
             try {
                 URL url = new URL(urlString);
