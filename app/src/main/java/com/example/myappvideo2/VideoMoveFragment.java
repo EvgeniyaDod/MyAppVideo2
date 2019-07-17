@@ -192,6 +192,8 @@ public class VideoMoveFragment extends Fragment {
                     leftBtn.setVisibility(View.INVISIBLE);
                     rightBtn.setVisibility(View.INVISIBLE);
                     downBtn.setVisibility(View.INVISIBLE);
+                    seekPan.setEnabled(false);
+                    seekTilt.setEnabled(false);
                     accelerometer=new Accelerometer(getContext());
                     accelerometer.setListener(new Accelerometer.Listener() {
                         @Override
@@ -219,6 +221,8 @@ public class VideoMoveFragment extends Fragment {
                     leftBtn.setVisibility(View.VISIBLE);
                     rightBtn.setVisibility(View.VISIBLE);
                     downBtn.setVisibility(View.VISIBLE);
+                    seekPan.setEnabled(true);
+                    seekTilt.setEnabled(true);
                     accelerometer.unregister();
                 }
             }

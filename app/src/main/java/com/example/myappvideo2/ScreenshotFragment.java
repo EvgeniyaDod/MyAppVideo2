@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -32,7 +33,7 @@ public class ScreenshotFragment extends Fragment {
         log=u;
         pas=p;
     }
-    
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -86,7 +87,12 @@ public class ScreenshotFragment extends Fragment {
         }
 
         protected void onPostExecute(Bitmap result) {
-            Image.setImageBitmap(result);
+            if(result==null)
+                Toast.makeText(getContext(), "Изображение не получено. Проверьте логин, пароль и IP-адрес камеры", Toast.LENGTH_LONG).show();
+            else {
+                Image.setImageBitmap(result);
+                Toast.makeText(getContext(), "Изображение получено", Toast.LENGTH_LONG).show();
+            }
         }
     }
 }
