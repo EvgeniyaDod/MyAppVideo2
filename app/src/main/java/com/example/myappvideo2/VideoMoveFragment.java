@@ -3,6 +3,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Base64;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -330,15 +331,16 @@ public class VideoMoveFragment extends Fragment {
             try {
                 URL url = new URL(urlString);
                 conn = (HttpURLConnection) url.openConnection();
-                if(!log.equalsIgnoreCase(""))
-                    conn.setRequestProperty("Authorization", "Basic " + Base64.encodeToString((log+":"+pas).getBytes(), Base64.NO_WRAP));
-                responseString=String.valueOf(conn.getResponseCode());
-//                if(conn.getResponseCode() >=200 && conn.getResponseCode()<400){
-//                    responseString = "OK";
-//                }
-//                else {
-//                    responseString = "FAILED";
-//                }
+                if(!log.equalsIgnoreCase("")) {
+                    conn.setRequestProperty("Authorization", "Basic " + Base64.encodeToString((log + ":" + pas).getBytes(), Base64.NO_WRAP));
+                }
+                int code=conn.getResponseCode();
+                if( code>=200 && code<400){
+                    responseString = "OK";
+                }
+                else {
+                    responseString = "FAILED";
+                }
             } catch (IOException e) {
                 responseString = "ERROR";
             } finally {
@@ -350,7 +352,10 @@ public class VideoMoveFragment extends Fragment {
         @Override
         protected void onPostExecute(String result) {
             super.onPostExecute(result);
-            //Toast.makeText(getContext(), result, Toast.LENGTH_SHORT).show();
+            if(result.equalsIgnoreCase("ERROR"))
+                Toast.makeText(getContext(), "Ошибка при соединении. Проверьте параметры камеры", Toast.LENGTH_SHORT).show();
+            else if(result.equalsIgnoreCase("FAILED"))
+                Toast.makeText(getContext(), "Ошибка при соединении. Проверьте параметры сети", Toast.LENGTH_SHORT).show();
         }
     }
 }
