@@ -29,6 +29,7 @@ public class navigation extends AppCompatActivity
     String ip="";
     String log="";
     String pas="";
+    boolean ptz;
     VideoMoveFragment videoMoveFragment;
     ScreenshotFragment screenshotFragment;
 
@@ -50,7 +51,8 @@ public class navigation extends AppCompatActivity
         log = intent.getStringExtra("username");
         pas = intent.getStringExtra("password");
         ip = intent.getStringExtra("ipCam");
-        videoMoveFragment=new VideoMoveFragment(ip, log, pas);
+        ptz=intent.getBooleanExtra("ckPTZ", false);
+        videoMoveFragment=new VideoMoveFragment(ip, log, pas, ptz);
         screenshotFragment=new ScreenshotFragment(ip, log, pas);
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction().replace(R.id.container, videoMoveFragment).commit();

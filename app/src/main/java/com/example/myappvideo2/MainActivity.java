@@ -12,6 +12,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.MediaController;
@@ -30,6 +31,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private EditText password;
     private EditText ipCam;
     private Button bnLogin;
+    private CheckBox ckPTZ;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,6 +43,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         ipCam = (EditText) findViewById(R.id.ip);
 
         bnLogin = (Button) findViewById(R.id.bnLog);
+        ckPTZ = (CheckBox) findViewById(R.id.checkPTZ);
 
         bnLogin.setOnClickListener(this);
     }
@@ -51,6 +54,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         intent.putExtra("username", username.getText().toString());  //сохраняем переменные
         intent.putExtra("password", password.getText().toString());
         intent.putExtra("ipCam", ipCam.getText().toString());
+        intent.putExtra("ckPTZ", ckPTZ.isChecked());
         startActivity(intent);
         //finish();
     }

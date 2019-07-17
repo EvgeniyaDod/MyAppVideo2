@@ -88,6 +88,18 @@
             android:textSize="16sp"></EditText>
     </LinearLayout>
 
+    <CheckBox
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/ckPTZCamera"
+        android:id="@+id/checkPTZ"
+        android:layout_marginBottom="10sp"
+        android:layout_marginLeft="22sp"
+        android:textSize="16sp"
+        android:button="@null"
+        android:drawableRight="?android:attr/listChoiceIndicatorMultiple"
+        />
+
     <Button
         android:id="@+id/bnLog"
         android:layout_width="wrap_content"

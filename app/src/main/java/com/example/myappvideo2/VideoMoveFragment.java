@@ -30,12 +30,12 @@ public class VideoMoveFragment extends Fragment {
     Button leftBtn;
     Button rightBtn;
     Button downBtn;
-    //Button sendSignal;
     MediaController mc;
     CheckBox checkMoveAccelerometer;
     String ip="";
     String log="";
     String pas="";
+    Boolean PTZ;
 
     Accelerometer accelerometer;
 
@@ -58,10 +58,11 @@ public class VideoMoveFragment extends Fragment {
     int vertNow=50;
     int horNow=50;
 
-    public VideoMoveFragment(String i, String u, String p) {
+    public VideoMoveFragment(String i, String u, String p, Boolean ptz) {
         ip=i;
         log=u;
         pas=p;
+        PTZ=ptz;
     }
 
     @Override
@@ -80,7 +81,6 @@ public class VideoMoveFragment extends Fragment {
         leftBtn = (Button) v.findViewById(R.id.left);
         rightBtn = (Button) v.findViewById(R.id.right);
         downBtn = (Button) v.findViewById(R.id.down);
-        //sendSignal=(Button) v.findViewById(R.id.sendSignal);
         checkMoveAccelerometer=(CheckBox) v.findViewById(R.id.checkAcc);
 
         seekZoom=(SeekBar)v.findViewById(R.id.seekHorZoom);
@@ -104,7 +104,10 @@ public class VideoMoveFragment extends Fragment {
         else
             URL=log+":"+pas+"@"+ip;
         mc = new MediaController(getContext());
-        myVideo.setVideoURI(Uri.parse("rtsp://"+URL+"/axis-media/media.amp"));
+        if(PTZ)
+            myVideo.setVideoURI(Uri.parse("rtsp://"+URL+"/mpeg4/media.amp"));
+        else
+            myVideo.setVideoURI(Uri.parse("rtsp://"+URL+"/axis-media/media.amp"));
         myVideo.setMediaController(mc);
         myVideo.requestFocus();
         myVideo.start();
