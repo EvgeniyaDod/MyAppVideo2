@@ -11,6 +11,7 @@
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="20dp"
         android:text="Авторизация"
+        android:textColor="#FF000000"
         android:textSize="18sp" />
 
     <LinearLayout
@@ -28,7 +29,8 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="Пользователь:"
-            android:textSize="16sp" />
+            android:textSize="16sp"
+            android:textColor="#FF000000" />
 
         <EditText
             android:id="@+id/user"
@@ -53,7 +55,8 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="Пароль:"
-            android:textSize="16sp" />
+            android:textSize="16sp"
+            android:textColor="#FF000000"/>
 
         <EditText
             android:id="@+id/pass"
@@ -78,7 +81,8 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="Ip-адрес:"
-            android:textSize="16sp" />
+            android:textSize="16sp"
+            android:textColor="#FF000000" />
 
         <EditText
             android:id="@+id/ip"
@@ -93,8 +97,9 @@
         android:layout_height="wrap_content"
         android:text="@string/ckPTZCamera"
         android:id="@+id/checkPTZ"
-        android:layout_marginBottom="10sp"
-        android:layout_marginLeft="22sp"
+        android:layout_marginTop="3pt"
+        android:layout_marginBottom="3pt"
+        android:layout_marginLeft="10pt"
         android:textSize="16sp"
         android:button="@null"
         android:drawableRight="?android:attr/listChoiceIndicatorMultiple"

@@ -14,7 +14,8 @@
             android:id="@+id/layuot1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:background="#000000">
 
             <LinearLayout
                 android:id="@+id/layuot2"
@@ -147,6 +148,7 @@
             android:textColor="#FF000000"
             android:layout_marginTop="15sp"
             android:layout_marginLeft="5pt"
+            android:id="@+id/txFocus"
             />
         <LinearLayout
             android:id="@+id/layuot6"
@@ -184,6 +186,7 @@
             android:textColor="#FF000000"
             android:layout_marginLeft="5pt"
             android:layout_marginTop="15sp"
+            android:id="@+id/txIris"
             />
         <LinearLayout
             android:id="@+id/layuot7"

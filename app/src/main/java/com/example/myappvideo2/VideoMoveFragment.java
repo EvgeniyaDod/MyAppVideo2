@@ -2,15 +2,19 @@ package com.example.myappvideo2;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.text.Layout;
 import android.util.Base64;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.LinearLayout;
 import android.widget.MediaController;
 import android.widget.SeekBar;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.VideoView;
 
@@ -29,6 +33,9 @@ public class VideoMoveFragment extends Fragment {
     private Button leftBtn;
     private Button rightBtn;
     private Button downBtn;
+    private LinearLayout l2;
+    private LinearLayout l3;
+    private LinearLayout l4;
     private MediaController mc;
     private CheckBox checkMoveAccelerometer;
     private String ip;
@@ -42,10 +49,12 @@ public class VideoMoveFragment extends Fragment {
     private Button zoomLeftBtn;
     private Button zoomRightBtn;
 
+    private TextView tvFocus;
     private SeekBar seekFocus;
     private Button focusLeftBtn;
     private Button focusRightBtn;
 
+    private TextView tvIris;
     private SeekBar seekIris;
     private Button irisLeftBtn;
     private Button irisRightBtn;
@@ -54,8 +63,9 @@ public class VideoMoveFragment extends Fragment {
 
     private SeekBar seekPan;
     private SeekBar seekTilt;
-    private int vertNow=50;
-    private int horNow=50;
+    private int vertNow=7;
+    private int horNow=16;
+    private String URL;
 
     public VideoMoveFragment(String i, String u, String p, Boolean ptz) {
         ip=i;
@@ -80,16 +90,21 @@ public class VideoMoveFragment extends Fragment {
         leftBtn = (Button) v.findViewById(R.id.left);
         rightBtn = (Button) v.findViewById(R.id.right);
         downBtn = (Button) v.findViewById(R.id.down);
+        l2=(LinearLayout) v.findViewById(R.id.layuot2);
+        l3=(LinearLayout) v.findViewById(R.id.layuot3);
+        l4=(LinearLayout) v.findViewById(R.id.layuot4);
         checkMoveAccelerometer=(CheckBox) v.findViewById(R.id.checkAcc);
 
         seekZoom=(SeekBar)v.findViewById(R.id.seekHorZoom);
         zoomLeftBtn = (Button) v.findViewById(R.id.leftZoom);
         zoomRightBtn = (Button) v.findViewById(R.id.rightZoom);
 
+        tvFocus=(TextView)v.findViewById(R.id.txFocus);
         seekFocus=(SeekBar)v.findViewById(R.id.seekHorFocus);
         focusLeftBtn = (Button) v.findViewById(R.id.leftFocus);
         focusRightBtn = (Button) v.findViewById(R.id.rightFocus);
 
+        tvIris=(TextView)v.findViewById(R.id.txIris);
         seekIris=(SeekBar)v.findViewById(R.id.seekHorIris);
         irisLeftBtn = (Button) v.findViewById(R.id.leftIris);
         irisRightBtn = (Button) v.findViewById(R.id.rightIris);
@@ -97,19 +112,48 @@ public class VideoMoveFragment extends Fragment {
         seekPan=(SeekBar)v.findViewById(R.id.seekHorMove);
         seekTilt=(SeekBar)v.findViewById(R.id.seekVertMove);
 
-        String URL;
         if(log.equalsIgnoreCase("")&&pas.equalsIgnoreCase(""))
             URL=ip;
         else
             URL=log+":"+pas+"@"+ip;
-        mc = new MediaController(getContext());
-        if(PTZ)
-            myVideo.setVideoURI(Uri.parse("rtsp://"+URL+"/mpeg4/media.amp"));
-        else
-            myVideo.setVideoURI(Uri.parse("rtsp://"+URL+"/axis-media/media.amp"));
-        myVideo.setMediaController(mc);
-        myVideo.requestFocus();
-        myVideo.start();
+
+        if(PTZ){
+            tvFocus.setVisibility(View.VISIBLE);
+            seekFocus.setVisibility(View.VISIBLE);
+            focusLeftBtn.setVisibility(View.VISIBLE);
+            focusRightBtn.setVisibility(View.VISIBLE);
+
+            tvIris.setVisibility(View.VISIBLE);
+            seekIris.setVisibility(View.VISIBLE);
+            irisLeftBtn.setVisibility(View.VISIBLE);
+            irisRightBtn.setVisibility(View.VISIBLE);
+
+            if(savedInstanceState==null){
+                seekPan.setProgress(16);
+                seekPan.setMax(32);
+                seekTilt.setProgress(7);
+                seekTilt.setMax(14);
+            }
+        }else{
+            tvFocus.setVisibility(View.INVISIBLE);
+            seekFocus.setVisibility(View.INVISIBLE);
+            focusLeftBtn.setVisibility(View.INVISIBLE);
+            focusRightBtn.setVisibility(View.INVISIBLE);
+
+            tvIris.setVisibility(View.INVISIBLE);
+            seekIris.setVisibility(View.INVISIBLE);
+            irisLeftBtn.setVisibility(View.INVISIBLE);
+            irisRightBtn.setVisibility(View.INVISIBLE);
+
+            if(savedInstanceState==null){
+                seekPan.setProgress(0);
+                seekPan.setMax(0);
+                seekTilt.setProgress(0);
+                seekTilt.setMax(0);
+            }
+        }
+
+
 
         return v;
     }
@@ -144,14 +188,14 @@ public class VideoMoveFragment extends Fragment {
         seekPan.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean b) {
-                int change=progress-vertNow;
+                int change=progress-horNow;
                 if(change>0)
                     for(int i=0; i<change; i++)
                         new SendTask().execute("http://"+ip+"/axis-cgi/com/ptz.cgi?move=right");
                 else if(change<0)
                     for(int i=change; i<0; i++)
                         new SendTask().execute("http://"+ip+"/axis-cgi/com/ptz.cgi?move=left");
-                vertNow=progress;
+                horNow=progress;
             }
 
             @Override
@@ -167,14 +211,14 @@ public class VideoMoveFragment extends Fragment {
         seekTilt.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean b) {
-                int change=progress-horNow;
+                int change=progress-vertNow;
                 if(change>0)
                     for(int i=0; i<change; i++)
                         new SendTask().execute("http://"+ip+"/axis-cgi/com/ptz.cgi?move=up");
                 else if(change<0)
                     for(int i=change; i<0; i++)
                         new SendTask().execute("http://"+ip+"/axis-cgi/com/ptz.cgi?move=down");
-                horNow=progress;
+                vertNow=progress;
             }
 
             @Override
@@ -191,41 +235,35 @@ public class VideoMoveFragment extends Fragment {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
                 if(isChecked){
-                    upBtn.setVisibility(View.INVISIBLE);
-                    leftBtn.setVisibility(View.INVISIBLE);
-                    rightBtn.setVisibility(View.INVISIBLE);
-                    downBtn.setVisibility(View.INVISIBLE);
-                    seekPan.setEnabled(false);
-                    seekTilt.setEnabled(false);
+                    l3.setVisibility(View.INVISIBLE);
+                    l4.setVisibility(View.INVISIBLE);
+                    LinearLayout.LayoutParams lp=new LinearLayout.LayoutParams(getActivity().getWindow().getDecorView().getMeasuredWidth(), LinearLayout.LayoutParams.WRAP_CONTENT);
+                    lp.gravity = Gravity.CENTER;
+                    l2.setLayoutParams(lp);
                     accelerometer=new Accelerometer(getContext());
                     accelerometer.setListener(new Accelerometer.Listener() {
                         @Override
                         public void onTranslation(float tx, float ty, float tz) {
                             if (tx > 1.0f) {
-                                //new SendTask().execute("http://"+ip+"/axis-cgi/com/ptz.cgi?move=left");
                                 leftChange(seekPan,1);
                             } else if (tx < -1.0f) {
-                                //new SendTask().execute("http://"+ip+"/axis-cgi/com/ptz.cgi?move=right");
                                 rightChange(seekPan,1);
                             }
 
                             if (ty > 1.0f) {
-                                //new SendTask().execute("http://"+ip+"/axis-cgi/com/ptz.cgi?move=down");
                                 leftChange(seekTilt,1);
                             } else if (ty < -1.0f) {
-                                //new SendTask().execute("http://"+ip+"/axis-cgi/com/ptz.cgi?move=up");
                                 rightChange(seekTilt,1);
                             }
                         }
                     });
                     accelerometer.register();
                 }else{
-                    upBtn.setVisibility(View.VISIBLE);
-                    leftBtn.setVisibility(View.VISIBLE);
-                    rightBtn.setVisibility(View.VISIBLE);
-                    downBtn.setVisibility(View.VISIBLE);
-                    seekPan.setEnabled(true);
-                    seekTilt.setEnabled(true);
+                    l3.setVisibility(View.VISIBLE);
+                    l4.setVisibility(View.VISIBLE);
+                    LinearLayout.LayoutParams lp=new LinearLayout.LayoutParams(getActivity().getWindow().getDecorView().getMeasuredWidth()-40, LinearLayout.LayoutParams.WRAP_CONTENT);
+                    lp.gravity = Gravity.CENTER;
+                    l2.setLayoutParams(lp);
                     accelerometer.unregister();
                 }
             }
@@ -273,6 +311,14 @@ public class VideoMoveFragment extends Fragment {
     @Override
     public void onResume(){
         super.onResume();
+        mc = new MediaController(getContext());
+        if(PTZ)
+            myVideo.setVideoURI(Uri.parse("rtsp://"+URL+"/mpeg4/media.amp"));
+        else
+            myVideo.setVideoURI(Uri.parse("rtsp://"+URL+"/axis-media/media.amp"));
+        myVideo.setMediaController(mc);
+        myVideo.requestFocus();
+        myVideo.start();
         if(checkMoveAccelerometer.isChecked())
             accelerometer.register();
     }
