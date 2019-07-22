@@ -1,4 +1,5 @@
 package com.example.myappvideo2;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -13,6 +14,8 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.LinearLayout;
 import android.widget.MediaController;
+import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -29,11 +32,14 @@ import java.net.URL;
 public class VideoMoveFragment extends Fragment {
 
     private VideoView myVideo;
+    private ProgressBar videoProgressBar;
+    private int horProgress;
+    private int vertProgress;
     private Button upBtn;
     private Button leftBtn;
     private Button rightBtn;
     private Button downBtn;
-    private LinearLayout l2;
+    private RelativeLayout l2;
     private LinearLayout l3;
     private LinearLayout l4;
     private MediaController mc;
@@ -86,11 +92,12 @@ public class VideoMoveFragment extends Fragment {
         super.onCreateView(inflater, container, savedInstanceState);
         View v=inflater.inflate(R.layout.fragment_video_move, container, false);
         myVideo = (VideoView) v.findViewById(R.id.myVideo);
+        videoProgressBar=(ProgressBar)v.findViewById((R.id.video_progressbar));
         upBtn = (Button) v.findViewById(R.id.up);
         leftBtn = (Button) v.findViewById(R.id.left);
         rightBtn = (Button) v.findViewById(R.id.right);
         downBtn = (Button) v.findViewById(R.id.down);
-        l2=(LinearLayout) v.findViewById(R.id.layuot2);
+        l2=(RelativeLayout) v.findViewById(R.id.layuot2);
         l3=(LinearLayout) v.findViewById(R.id.layuot3);
         l4=(LinearLayout) v.findViewById(R.id.layuot4);
         checkMoveAccelerometer=(CheckBox) v.findViewById(R.id.checkAcc);
@@ -129,10 +136,14 @@ public class VideoMoveFragment extends Fragment {
             irisRightBtn.setVisibility(View.VISIBLE);
 
             if(savedInstanceState==null){
-                seekPan.setProgress(16);
-                seekPan.setMax(32);
-                seekTilt.setProgress(7);
-                seekTilt.setMax(14);
+                seekPan.setProgress(29/2);
+                seekPan.setMax(29);
+                seekTilt.setProgress(5);
+                seekTilt.setMax(10);
+                vertProgress=10;
+                horProgress=29;
+				vertNow=5;
+				horNow=29/2;
             }
         }else{
             tvFocus.setVisibility(View.INVISIBLE);
@@ -150,6 +161,10 @@ public class VideoMoveFragment extends Fragment {
                 seekPan.setMax(0);
                 seekTilt.setProgress(0);
                 seekTilt.setMax(0);
+                vertProgress=0;
+                horProgress=0;
+				vertNow=0;
+				horNow=0;
             }
         }
 
@@ -188,14 +203,17 @@ public class VideoMoveFragment extends Fragment {
         seekPan.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean b) {
-                int change=progress-horNow;
-                if(change>0)
-                    for(int i=0; i<change; i++)
-                        new SendTask().execute("http://"+ip+"/axis-cgi/com/ptz.cgi?move=right");
-                else if(change<0)
-                    for(int i=change; i<0; i++)
-                        new SendTask().execute("http://"+ip+"/axis-cgi/com/ptz.cgi?move=left");
-                horNow=progress;
+                if(!changeMove) {
+                    int change = progress - horNow;
+                    if (change > 0)
+                        for (int i = 0; i < change; i++)
+                            new SendTask().execute("http://" + ip + "/axis-cgi/com/ptz.cgi?move=right");
+                    else if (change < 0)
+                        for (int i = change; i < 0; i++)
+                            new SendTask().execute("http://" + ip + "/axis-cgi/com/ptz.cgi?move=left");
+                    horNow = progress;
+                }
+                changeMove=false;
             }
 
             @Override
@@ -211,14 +229,17 @@ public class VideoMoveFragment extends Fragment {
         seekTilt.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean b) {
-                int change=progress-vertNow;
-                if(change>0)
-                    for(int i=0; i<change; i++)
-                        new SendTask().execute("http://"+ip+"/axis-cgi/com/ptz.cgi?move=up");
-                else if(change<0)
-                    for(int i=change; i<0; i++)
-                        new SendTask().execute("http://"+ip+"/axis-cgi/com/ptz.cgi?move=down");
-                vertNow=progress;
+                if(!changeMove) {
+                    int change = progress - vertNow;
+                    if (change > 0)
+                        for (int i = 0; i < change; i++)
+                            new SendTask().execute("http://" + ip + "/axis-cgi/com/ptz.cgi?move=up");
+                    else if (change < 0)
+                        for (int i = change; i < 0; i++)
+                            new SendTask().execute("http://" + ip + "/axis-cgi/com/ptz.cgi?move=down");
+                    vertNow = progress;
+                }
+                changeMove=false;
             }
 
             @Override
@@ -312,13 +333,30 @@ public class VideoMoveFragment extends Fragment {
     public void onResume(){
         super.onResume();
         mc = new MediaController(getContext());
+        myVideo.setMediaController(mc);
         if(PTZ)
             myVideo.setVideoURI(Uri.parse("rtsp://"+URL+"/mpeg4/media.amp"));
         else
             myVideo.setVideoURI(Uri.parse("rtsp://"+URL+"/axis-media/media.amp"));
-        myVideo.setMediaController(mc);
+
         myVideo.requestFocus();
         myVideo.start();
+        videoProgressBar.setVisibility(View.VISIBLE);
+        myVideo.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+            @Override
+            public void onPrepared(MediaPlayer mediaPlayer) {
+                mediaPlayer.start();
+                mediaPlayer.setOnVideoSizeChangedListener(new MediaPlayer.OnVideoSizeChangedListener() {
+                    @Override
+                    public void onVideoSizeChanged(MediaPlayer mediaPlayer, int i, int i1) {
+                        videoProgressBar.setVisibility(View.GONE);
+                        mediaPlayer.start();
+                    }
+                });
+            }
+        });
+
+
         if(checkMoveAccelerometer.isChecked())
             accelerometer.register();
     }
@@ -353,6 +391,8 @@ public class VideoMoveFragment extends Fragment {
                 else
                     change=progress*200-1;
                 new SendTask().execute(s+change);
+                if(seekBar.getId()==R.id.seekHorZoom)
+                    changeMoveSeekBar(progress);
             }
 
             @Override
@@ -368,6 +408,74 @@ public class VideoMoveFragment extends Fragment {
          return sbListenerZFI;
     }
 
+    boolean changeMove=false;
+    private void changeMoveSeekBar(int progress) {
+        int pr;
+        if(PTZ){
+            changeMove=true;
+            seekPan.setMax(29+425*progress*2/100);
+            changeMove=true;
+            seekTilt.setMax(10+150*progress*2/100);
+            if(horProgress!=0)
+                pr=seekPan.getMax()*seekPan.getProgress()/horProgress;
+            else
+                pr=1;
+            changeMove=true;
+            seekPan.setProgress(pr);
+            if(vertProgress!=0)
+                pr=seekTilt.getMax()*seekTilt.getProgress()/vertProgress;
+            else
+                pr=1;
+            changeMove=true;
+            seekTilt.setProgress(pr);
+        }else{
+            changeMove=true;
+            if(progress<=10){
+                seekPan.setMax((int)(progress*0.34+1));
+                changeMove=true;
+                seekTilt.setMax((int)(progress*0.34+1));
+            }else if(progress<=15){
+                seekPan.setMax((int)(progress*0.54));
+                changeMove=true;
+                seekTilt.setMax((int)(progress*0.4));
+            }else if(progress<=30){
+                seekPan.setMax((int)(progress*0.6));
+                changeMove=true;
+                seekTilt.setMax((int)(progress*0.8));
+            }else if(progress<=35){
+                seekPan.setMax((int)(progress*0.8));
+                changeMove=true;
+                seekTilt.setMax((int)(progress*0.95));
+            }else if(progress<=40){
+                seekPan.setMax((int)(progress*1));
+                changeMove=true;
+                seekTilt.setMax((int)(progress*1.5));
+            }else if(progress<=45){
+                seekPan.setMax((int)(progress*2.5));
+                changeMove=true;
+                seekTilt.setMax((int)(progress*4));
+            }else if(progress<=50){
+                seekPan.setMax((int)(progress*3.5));
+                changeMove=true;
+                seekTilt.setMax((int)(progress*6));
+            }
+            if(horProgress!=0)
+                pr=seekPan.getMax()*seekPan.getProgress()/horProgress;
+            else
+                pr=0;
+            changeMove=true;
+            seekPan.setProgress(pr);
+            if(vertProgress!=0)
+                pr=seekTilt.getMax()*seekTilt.getProgress()/vertProgress;
+            else
+                pr=0;
+            changeMove=true;
+            seekTilt.setProgress(pr);
+        }
+        horProgress=seekPan.getMax();
+        vertProgress=seekTilt.getMax();
+        changeMove=false;
+    }
 
 
     class SendTask extends AsyncTask<String, String, String> {

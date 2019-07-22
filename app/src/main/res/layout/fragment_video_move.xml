@@ -17,7 +17,7 @@
             android:orientation="horizontal"
             android:background="#000000">
 
-            <LinearLayout
+            <RelativeLayout
                 android:id="@+id/layuot2"
                 android:layout_width="wrap_content"
                 android:layout_height="270sp"
@@ -29,7 +29,15 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center" />
-            </LinearLayout>
+
+                <ProgressBar
+                    android:id="@+id/video_progressbar"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:visibility="gone"
+                    />
+            </RelativeLayout>
 
             <LinearLayout
                 android:id="@+id/layuot3"
@@ -130,7 +138,7 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/seekHorZoom"
                 android:layout_gravity="center_vertical"
-                android:progress="1"
+                android:progress="0"
                 android:max="50"
                 />
             <Button

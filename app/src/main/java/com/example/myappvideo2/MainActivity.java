@@ -3,7 +3,9 @@ package com.example.myappvideo2;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.MediaPlayer;
@@ -24,6 +26,8 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.HashSet;
+import java.util.Set;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -32,6 +36,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private EditText ipCam;
     private Button bnLogin;
     private CheckBox ckPTZ;
+    private String settings="MyCameraSettings";
+    private String set1="IP";
+    private String set2="Login";
+    private String set3="Password";
+    private String set4="PTZ";
+    SharedPreferences mSettings;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +56,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         ckPTZ = (CheckBox) findViewById(R.id.checkPTZ);
 
         bnLogin.setOnClickListener(this);
+        mSettings=getSharedPreferences(settings, Context.MODE_PRIVATE);
     }
 
     @Override
@@ -57,6 +68,26 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         intent.putExtra("ckPTZ", ckPTZ.isChecked());
         startActivity(intent);
         //finish();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        ipCam.setText(mSettings.getString(set1, ""));
+        username.setText(mSettings.getString(set2, ""));
+        password.setText(mSettings.getString(set3, ""));
+        ckPTZ.setChecked(mSettings.getBoolean(set4, false));
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        SharedPreferences.Editor e =mSettings.edit();
+        e.putString(set1, ipCam.getText().toString());
+        e.putString(set2, username.getText().toString());
+        e.putString(set3, password.getText().toString());
+        e.putBoolean(set4, ckPTZ.isChecked());
+        e.apply();
     }
 }
 
